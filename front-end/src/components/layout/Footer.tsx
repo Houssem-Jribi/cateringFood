@@ -40,9 +40,13 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-4">
             <div className="flex items-center gap-2.5 mb-5">
-              <span className="w-10 h-10 rounded-full bg-[#fff8ed] text-[#4f6f52] flex items-center justify-center font-display text-xl">
-                P
-              </span>
+              <div className="w-10 h-10 rounded-full bg-[#fff8ed] flex items-center justify-center overflow-hidden">
+                <img
+                  src="/logo.png"
+                  alt="Platter Catering Logo"
+                  className="w-7 h-7 object-contain"
+                />
+              </div>
               <span className="font-display text-2xl text-white">
                 Platter <span className="italic text-[#e8956a]">Catering</span>
               </span>

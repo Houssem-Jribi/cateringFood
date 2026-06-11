@@ -55,9 +55,11 @@ export default function Navbar() {
               className="flex items-center gap-2.5 group"
               aria-label="Platter Catering — home"
             >
-              <span className="w-9 h-9 rounded-full bg-[#4f6f52] text-white flex items-center justify-center font-display text-lg leading-none transition-transform duration-300 group-hover:rotate-12">
-                P
-              </span>
+              <img
+                src="/logo.png"
+                alt="Platter Catering Logo"
+                className="w-9 h-9 object-contain transition-transform duration-300 group-hover:scale-110"
+              />
               <span className="font-display text-xl text-[#263128]">
                 Platter <span className="italic text-[#c96b3c]">Catering</span>
               </span>
