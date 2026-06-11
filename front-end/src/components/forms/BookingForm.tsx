@@ -100,11 +100,27 @@ const PACKAGES: { name: string; perHead: number }[] = [
 
 const SERVICE_TYPES = [
   { name: "Delivery Only", note: "Food delivered ready to serve", factor: 1 },
-  { name: "Delivery + Setup", note: "We arrange the full spread on site", factor: 1.15 },
-  { name: "Full-Service Catering", note: "Setup, service staff & cleanup", factor: 1.35 },
+  {
+    name: "Delivery + Setup",
+    note: "We arrange the full spread on site",
+    factor: 1.15,
+  },
+  {
+    name: "Full-Service Catering",
+    note: "Setup, service staff & cleanup",
+    factor: 1.35,
+  },
 ];
 
-const DEPARTMENTS = ["HR", "Office Management", "Events", "Executive Office", "Operations", "Marketing", "Other"];
+const DEPARTMENTS = [
+  "HR",
+  "Office Management",
+  "Events",
+  "Executive Office",
+  "Operations",
+  "Marketing",
+  "Other",
+];
 const CONTACT_METHODS = ["Email", "Phone", "Either"];
 
 const BUDGET_MIN = 500;
@@ -165,7 +181,9 @@ function Toggle({
     >
       <span
         className={`w-5 h-5 rounded-md border-[1.5px] flex items-center justify-center text-[11px] text-white transition-all duration-300 ${
-          checked ? "bg-[#4f6f52] border-[#4f6f52]" : "border-[#263128]/25 bg-white"
+          checked
+            ? "bg-[#4f6f52] border-[#4f6f52]"
+            : "border-[#263128]/25 bg-white"
         }`}
       >
         {checked && "✓"}
@@ -187,7 +205,9 @@ function CardSelect({
   columns?: number;
 }) {
   return (
-    <div className={`grid gap-3 ${columns === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
+    <div
+      className={`grid gap-3 ${columns === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}
+    >
       {options.map((opt) => (
         <button
           key={opt.name}
@@ -199,10 +219,14 @@ function CardSelect({
               : "border-[#263128]/12 bg-white hover:border-[#263128]/25 hover:-translate-y-0.5"
           }`}
         >
-          <p className={`text-sm font-semibold ${value === opt.name ? "text-[#c96b3c]" : "text-[#263128]/75"}`}>
+          <p
+            className={`text-sm font-semibold ${value === opt.name ? "text-[#c96b3c]" : "text-[#263128]/75"}`}
+          >
             {opt.name}
           </p>
-          {opt.note && <p className="text-xs text-[#263128]/45 mt-0.5">{opt.note}</p>}
+          {opt.note && (
+            <p className="text-xs text-[#263128]/45 mt-0.5">{opt.note}</p>
+          )}
         </button>
       ))}
     </div>
@@ -224,8 +248,10 @@ export default function BookingForm() {
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.workEmail);
 
   const errors: Record<string, string> = {};
-  if (!data.companyName.trim()) errors.companyName = "Company name is required.";
-  if (!data.contactName.trim()) errors.contactName = "Contact person is required.";
+  if (!data.companyName.trim())
+    errors.companyName = "Company name is required.";
+  if (!data.contactName.trim())
+    errors.contactName = "Contact person is required.";
   if (!data.workEmail.trim()) errors.workEmail = "Work email is required.";
   else if (!emailValid) errors.workEmail = "Enter a valid work email address.";
   if (!data.phone.trim()) errors.phone = "Phone number is required.";
@@ -236,8 +262,15 @@ export default function BookingForm() {
   if (!data.serviceType) errors.serviceType = "Choose a service type.";
 
   const stepValid = (s: number) => {
-    if (s === 0) return !errors.companyName && !errors.contactName && !errors.workEmail && !errors.phone;
-    if (s === 1) return !errors.eventType && !errors.eventDate && !errors.location;
+    if (s === 0)
+      return (
+        !errors.companyName &&
+        !errors.contactName &&
+        !errors.workEmail &&
+        !errors.phone
+      );
+    if (s === 1)
+      return !errors.eventType && !errors.eventDate && !errors.location;
     if (s === 2) return !errors.cateringPackage;
     if (s === 3) return !errors.serviceType;
     return true;
@@ -283,7 +316,8 @@ export default function BookingForm() {
     }, 1800);
   };
 
-  const budgetProgress = ((data.budget - BUDGET_MIN) / (BUDGET_MAX - BUDGET_MIN)) * 100;
+  const budgetProgress =
+    ((data.budget - BUDGET_MIN) / (BUDGET_MAX - BUDGET_MIN)) * 100;
 
   /* ------------------------------ success ------------------------------ */
   if (submitted) {
@@ -297,25 +331,46 @@ export default function BookingForm() {
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          transition={{ type: "spring", stiffness: 200, damping: 14, delay: 0.2 }}
+          transition={{
+            type: "spring",
+            stiffness: 200,
+            damping: 14,
+            delay: 0.2,
+          }}
           className="w-20 h-20 rounded-full bg-[#8faf8b]/20 border-2 border-[#4f6f52]/30 flex items-center justify-center mx-auto mb-6 text-3xl"
         >
           ✓
         </motion.div>
-        <h3 className="font-display text-3xl text-[#263128] mb-4">Request Received</h3>
+        <h3 className="font-display text-3xl text-[#263128] mb-4">
+          Request Received
+        </h3>
         <p className="text-[#263128]/65 max-w-md mx-auto leading-relaxed mb-8">
           Thank you. Your corporate catering request has been received. Our team
           will contact you shortly with a customized B2B quote.
         </p>
         <div className="card-surface rounded-3xl p-6 max-w-sm mx-auto text-left text-sm space-y-2.5">
-          <p className="flex justify-between"><span className="text-[#263128]/50">Company</span><span className="font-medium">{data.companyName}</span></p>
-          <p className="flex justify-between"><span className="text-[#263128]/50">Event</span><span className="font-medium">{data.eventType}</span></p>
-          <p className="flex justify-between"><span className="text-[#263128]/50">Date</span><span className="font-medium">{data.eventDate}</span></p>
-          <p className="flex justify-between"><span className="text-[#263128]/50">Guests</span><span className="font-medium">{data.guestCount}</span></p>
+          <p className="flex justify-between">
+            <span className="text-[#263128]/50">Company</span>
+            <span className="font-medium">{data.companyName}</span>
+          </p>
+          <p className="flex justify-between">
+            <span className="text-[#263128]/50">Event</span>
+            <span className="font-medium">{data.eventType}</span>
+          </p>
+          <p className="flex justify-between">
+            <span className="text-[#263128]/50">Date</span>
+            <span className="font-medium">{data.eventDate}</span>
+          </p>
+          <p className="flex justify-between">
+            <span className="text-[#263128]/50">Guests</span>
+            <span className="font-medium">{data.guestCount}</span>
+          </p>
           {estimate && (
             <p className="flex justify-between border-t border-[#263128]/8 pt-2.5">
               <span className="text-[#263128]/50">Estimated from</span>
-              <span className="font-semibold text-[#c96b3c]">${estimate.toLocaleString()}</span>
+              <span className="font-semibold text-[#c96b3c]">
+                ${estimate.toLocaleString()}
+              </span>
             </p>
           )}
         </div>
@@ -335,11 +390,15 @@ export default function BookingForm() {
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         />
         {STEPS.map((label, i) => (
-          <div key={label} className="relative z-10 flex flex-col items-center gap-2">
+          <div
+            key={label}
+            className="relative z-10 flex flex-col items-center gap-2"
+          >
             <motion.div
               animate={{
                 scale: i === step ? 1.15 : 1,
-                backgroundColor: i < step ? "#4f6f52" : i === step ? "#c96b3c" : "#ffffff",
+                backgroundColor:
+                  i < step ? "#4f6f52" : i === step ? "#c96b3c" : "#ffffff",
                 color: i <= step ? "#ffffff" : "rgba(38,49,40,0.4)",
                 borderColor: i <= step ? "transparent" : "rgba(38,49,40,0.15)",
               }}
@@ -371,7 +430,11 @@ export default function BookingForm() {
         >
           {step === 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <Field label="Company Name" required error={showError("companyName")}>
+              <Field
+                label="Company Name"
+                required
+                error={showError("companyName")}
+              >
                 <input
                   className={`input-light ${showError("companyName") ? "input-error" : ""}`}
                   value={data.companyName}
@@ -380,7 +443,11 @@ export default function BookingForm() {
                   placeholder="Acme Corp"
                 />
               </Field>
-              <Field label="Contact Person Full Name" required error={showError("contactName")}>
+              <Field
+                label="Contact Person Full Name"
+                required
+                error={showError("contactName")}
+              >
                 <input
                   className={`input-light ${showError("contactName") ? "input-error" : ""}`}
                   value={data.contactName}
@@ -434,7 +501,11 @@ export default function BookingForm() {
 
           {step === 1 && (
             <div className="space-y-6">
-              <Field label="Corporate Event Type" required error={showError("eventType")}>
+              <Field
+                label="Corporate Event Type"
+                required
+                error={showError("eventType")}
+              >
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
                   {EVENT_TYPES.map((t) => (
                     <button
@@ -457,7 +528,11 @@ export default function BookingForm() {
               </Field>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                <Field label="Event Date" required error={showError("eventDate")}>
+                <Field
+                  label="Event Date"
+                  required
+                  error={showError("eventDate")}
+                >
                   <input
                     type="date"
                     className={`input-light ${showError("eventDate") ? "input-error" : ""}`}
@@ -475,7 +550,11 @@ export default function BookingForm() {
                     onChange={(e) => set("eventTime", e.target.value)}
                   />
                 </Field>
-                <Field label="Event Location" required error={showError("location")}>
+                <Field
+                  label="Event Location"
+                  required
+                  error={showError("location")}
+                >
                   <input
                     className={`input-light ${showError("location") ? "input-error" : ""}`}
                     value={data.location}
@@ -491,7 +570,9 @@ export default function BookingForm() {
                   <div className="flex items-center gap-3">
                     <button
                       type="button"
-                      onClick={() => set("guestCount", Math.max(5, data.guestCount - 5))}
+                      onClick={() =>
+                        set("guestCount", Math.max(5, data.guestCount - 5))
+                      }
                       className="w-11 h-11 rounded-xl border-[1.5px] border-[#263128]/15 bg-white text-lg font-semibold text-[#263128]/70 hover:border-[#c96b3c] hover:text-[#c96b3c] transition-colors"
                     >
                       −
@@ -508,7 +589,9 @@ export default function BookingForm() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => set("guestCount", Math.min(2000, data.guestCount + 5))}
+                      onClick={() =>
+                        set("guestCount", Math.min(2000, data.guestCount + 5))
+                      }
                       className="w-11 h-11 rounded-xl border-[1.5px] border-[#263128]/15 bg-white text-lg font-semibold text-[#263128]/70 hover:border-[#c96b3c] hover:text-[#c96b3c] transition-colors"
                     >
                       +
@@ -524,9 +607,14 @@ export default function BookingForm() {
                 </Field>
                 <Field label="Frequency">
                   <CardSelect
-                    options={[{ name: "One-time Event" }, { name: "Recurring Catering" }]}
+                    options={[
+                      { name: "One-time Event" },
+                      { name: "Recurring Catering" },
+                    ]}
                     value={data.frequency}
-                    onChange={(v) => set("frequency", v as FormData["frequency"])}
+                    onChange={(v) =>
+                      set("frequency", v as FormData["frequency"])
+                    }
                   />
                 </Field>
               </div>
@@ -535,7 +623,11 @@ export default function BookingForm() {
 
           {step === 2 && (
             <div className="space-y-6">
-              <Field label="Catering Package" required error={showError("cateringPackage")}>
+              <Field
+                label="Catering Package"
+                required
+                error={showError("cateringPackage")}
+              >
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
                   {PACKAGES.map((p) => (
                     <button
@@ -562,32 +654,33 @@ export default function BookingForm() {
 
               <Field label="Dietary Requirements">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <Toggle label="Vegetarian options" checked={data.vegetarian} onChange={(v) => set("vegetarian", v)} />
-                  <Toggle label="Vegan options" checked={data.vegan} onChange={(v) => set("vegan", v)} />
-                  <Toggle label="Gluten-free options" checked={data.glutenFree} onChange={(v) => set("glutenFree", v)} />
+                  <Toggle
+                    label="Vegetarian options"
+                    checked={data.vegetarian}
+                    onChange={(v) => set("vegetarian", v)}
+                  />
+                  <Toggle
+                    label="Vegan options"
+                    checked={data.vegan}
+                    onChange={(v) => set("vegan", v)}
+                  />
+                  <Toggle
+                    label="Gluten-free options"
+                    checked={data.glutenFree}
+                    onChange={(v) => set("glutenFree", v)}
+                  />
                 </div>
               </Field>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <Field label="Other Dietary Restrictions">
-                  <input
-                    className="input-light"
-                    value={data.otherDietary}
-                    onChange={(e) => set("otherDietary", e.target.value)}
-                    placeholder="Halal, kosher, nut allergies…"
-                  />
-                </Field>
-                <div className="grid grid-cols-2 gap-3 items-end">
-                  <Toggle label="Drinks required" checked={data.drinks} onChange={(v) => set("drinks", v)} />
-                  <Toggle label="Dessert required" checked={data.dessert} onChange={(v) => set("dessert", v)} />
-                </div>
-              </div>
             </div>
           )}
 
           {step === 3 && (
             <div className="space-y-6">
-              <Field label="Service Type" required error={showError("serviceType")}>
+              <Field
+                label="Service Type"
+                required
+                error={showError("serviceType")}
+              >
                 <CardSelect
                   options={SERVICE_TYPES}
                   value={data.serviceType}
@@ -600,9 +693,21 @@ export default function BookingForm() {
               </Field>
               <Field label="Additional Services">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <Toggle label="Service staff required" checked={data.staffRequired} onChange={(v) => set("staffRequired", v)} />
-                  <Toggle label="Table setup required" checked={data.tableSetup} onChange={(v) => set("tableSetup", v)} />
-                  <Toggle label="Cleanup required" checked={data.cleanup} onChange={(v) => set("cleanup", v)} />
+                  <Toggle
+                    label="Service staff required"
+                    checked={data.staffRequired}
+                    onChange={(v) => set("staffRequired", v)}
+                  />
+                  <Toggle
+                    label="Table setup required"
+                    checked={data.tableSetup}
+                    onChange={(v) => set("tableSetup", v)}
+                  />
+                  <Toggle
+                    label="Cleanup required"
+                    checked={data.cleanup}
+                    onChange={(v) => set("cleanup", v)}
+                  />
                 </div>
               </Field>
             </div>
@@ -610,7 +715,9 @@ export default function BookingForm() {
 
           {step === 4 && (
             <div className="space-y-6">
-              <Field label={`Estimated Budget Range — $${data.budget.toLocaleString()}`}>
+              <Field
+                label={`Estimated Budget Range — $${data.budget.toLocaleString()}`}
+              >
                 <input
                   type="range"
                   min={BUDGET_MIN}
@@ -619,7 +726,9 @@ export default function BookingForm() {
                   value={data.budget}
                   onChange={(e) => set("budget", Number(e.target.value))}
                   className="budget-slider mt-2"
-                  style={{ ["--slider-progress" as string]: `${budgetProgress}%` }}
+                  style={{
+                    ["--slider-progress" as string]: `${budgetProgress}%`,
+                  }}
                 />
                 <div className="flex justify-between text-xs text-[#263128]/40 mt-2">
                   <span>${BUDGET_MIN.toLocaleString()}</span>
@@ -660,7 +769,9 @@ export default function BookingForm() {
           {step === 5 && (
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
               <div className="lg:col-span-3 space-y-3 text-sm">
-                <h4 className="font-display text-xl text-[#263128] mb-4">Review your request</h4>
+                <h4 className="font-display text-xl text-[#263128] mb-4">
+                  Review your request
+                </h4>
                 {(
                   [
                     ["Company", data.companyName],
@@ -668,8 +779,14 @@ export default function BookingForm() {
                     ["Phone", data.phone],
                     ["Department", data.department || "—"],
                     ["Event", data.eventType],
-                    ["Date & time", `${data.eventDate} ${data.eventTime || ""}`],
-                    ["Location", `${data.location}${data.setting ? ` (${data.setting})` : ""}`],
+                    [
+                      "Date & time",
+                      `${data.eventDate} ${data.eventTime || ""}`,
+                    ],
+                    [
+                      "Location",
+                      `${data.location}${data.setting ? ` (${data.setting})` : ""}`,
+                    ],
                     ["Frequency", data.frequency || "One-time Event"],
                     ["Guests", String(data.guestCount)],
                     ["Package", data.cateringPackage],
@@ -686,12 +803,18 @@ export default function BookingForm() {
                     ],
                     [
                       "Extras",
-                      [data.drinks && "Drinks", data.dessert && "Dessert"].filter(Boolean).join(", ") || "—",
+                      [data.drinks && "Drinks", data.dessert && "Dessert"]
+                        .filter(Boolean)
+                        .join(", ") || "—",
                     ],
                     ["Service", data.serviceType],
                     [
                       "Add-ons",
-                      [data.staffRequired && "Staff", data.tableSetup && "Table setup", data.cleanup && "Cleanup"]
+                      [
+                        data.staffRequired && "Staff",
+                        data.tableSetup && "Table setup",
+                        data.cleanup && "Cleanup",
+                      ]
                         .filter(Boolean)
                         .join(", ") || "—",
                     ],
@@ -699,9 +822,14 @@ export default function BookingForm() {
                     ["Contact via", data.contactMethod],
                   ] as [string, string][]
                 ).map(([label, value]) => (
-                  <div key={label} className="flex justify-between gap-6 border-b border-[#263128]/6 pb-2.5">
+                  <div
+                    key={label}
+                    className="flex justify-between gap-6 border-b border-[#263128]/6 pb-2.5"
+                  >
                     <span className="text-[#263128]/45">{label}</span>
-                    <span className="font-medium text-right text-[#263128]/85">{value}</span>
+                    <span className="font-medium text-right text-[#263128]/85">
+                      {value}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -714,13 +842,18 @@ export default function BookingForm() {
                   </p>
                   {estimate ? (
                     <>
-                      <p className="font-display text-4xl mb-1">${estimate.toLocaleString()}</p>
+                      <p className="font-display text-4xl mb-1">
+                        ${estimate.toLocaleString()}
+                      </p>
                       <p className="text-white/55 text-xs mb-5">
-                        approx. for {data.guestCount} guests · {data.cateringPackage}
+                        approx. for {data.guestCount} guests ·{" "}
+                        {data.cateringPackage}
                       </p>
                     </>
                   ) : (
-                    <p className="text-white/60 text-sm mb-5">Select a package to see an estimate.</p>
+                    <p className="text-white/60 text-sm mb-5">
+                      Select a package to see an estimate.
+                    </p>
                   )}
                   <ul className="space-y-2 text-xs text-white/60 mb-6">
                     <li>✓ Final quote tailored by our team within 24h</li>
@@ -766,7 +899,10 @@ export default function BookingForm() {
             </span>
           )}
 
-          <button onClick={next} className="btn-primary px-8 py-3.5 rounded-full text-sm">
+          <button
+            onClick={next}
+            className="btn-primary px-8 py-3.5 rounded-full text-sm"
+          >
             Continue →
           </button>
         </div>
