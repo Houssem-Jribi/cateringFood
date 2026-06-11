@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Reveal from "@/components/ui/Reveal";
 import TiltCard from "@/components/ui/TiltCard";
@@ -11,9 +11,64 @@ function scrollToBooking() {
 
 export default function MenuSection() {
   const [added, setAdded] = useState<string[]>([]);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const addToQuote = (name: string) => {
     setAdded((prev) => (prev.includes(name) ? prev : [...prev, name]));
+  };
+
+  const onScroll = () => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const scrollLeft = container.scrollLeft;
+      const cardWidth = container.children[0]?.getBoundingClientRect().width || 300;
+      const gap = 28; // gap-7 is 28px
+      const itemWidth = cardWidth + gap;
+      const index = Math.round(scrollLeft / itemWidth);
+      setActiveIndex(index);
+    }
+  };
+
+  const scrollPrev = () => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const cardWidth = container.children[0]?.getBoundingClientRect().width || 300;
+      const gap = 28;
+      const targetIndex = Math.max(0, activeIndex - 1);
+      container.scrollTo({
+        left: targetIndex * (cardWidth + gap),
+        behavior: "smooth",
+      });
+      setActiveIndex(targetIndex);
+    }
+  };
+
+  const scrollNext = () => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const cardWidth = container.children[0]?.getBoundingClientRect().width || 300;
+      const gap = 28;
+      const targetIndex = Math.min(PACKAGES.length - 1, activeIndex + 1);
+      container.scrollTo({
+        left: targetIndex * (cardWidth + gap),
+        behavior: "smooth",
+      });
+      setActiveIndex(targetIndex);
+    }
+  };
+
+  const scrollToItem = (index: number) => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const cardWidth = container.children[0]?.getBoundingClientRect().width || 300;
+      const gap = 28;
+      container.scrollTo({
+        left: index * (cardWidth + gap),
+        behavior: "smooth",
+      });
+      setActiveIndex(index);
+    }
   };
 
   return (
@@ -39,7 +94,11 @@ export default function MenuSection() {
           </Reveal>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-7">
+        <div
+          ref={scrollContainerRef}
+          onScroll={onScroll}
+          className="flex md:grid md:grid-cols-2 xl:grid-cols-3 gap-7 overflow-x-auto md:overflow-x-visible snap-x snap-mandatory scrollbar-none pb-6 md:pb-0"
+        >
           {PACKAGES.map((pkg, i) => {
             const isAdded = added.includes(pkg.name);
             return (
@@ -49,6 +108,7 @@ export default function MenuSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.75, delay: (i % 3) * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                className="snap-start shrink-0 w-[85vw] sm:w-[60vw] md:w-auto"
               >
                 <TiltCard className="h-full">
                   <div className="group card-surface rounded-[1.75rem] overflow-hidden h-full flex flex-col transition-shadow duration-500 hover:shadow-[0_40px_80px_-24px_rgba(38,49,40,0.28)]">
@@ -103,6 +163,56 @@ export default function MenuSection() {
               </motion.div>
             );
           })}
+        </div>
+
+        {/* Carousel Navigation (Mobile Only) */}
+        <div className="flex md:hidden items-center justify-center gap-4 mt-6">
+          <button
+            onClick={scrollPrev}
+            className="w-11 h-11 rounded-full bg-white border border-[#263128]/10 flex items-center justify-center soft-shadow disabled:opacity-40 disabled:pointer-events-none"
+            aria-label="Previous menu"
+            disabled={activeIndex === 0}
+          >
+            <svg
+              className="w-5 h-5 text-[#263128]"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          
+          <div className="flex items-center gap-1.5">
+            {PACKAGES.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => scrollToItem(idx)}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  activeIndex === idx ? "w-6 bg-[#c96b3c]" : "w-2 bg-[#263128]/15"
+                }`}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
+          </div>
+
+          <button
+            onClick={scrollNext}
+            className="w-11 h-11 rounded-full bg-white border border-[#263128]/10 flex items-center justify-center soft-shadow disabled:opacity-40 disabled:pointer-events-none"
+            aria-label="Next menu"
+            disabled={activeIndex === PACKAGES.length - 1}
+          >
+            <svg
+              className="w-5 h-5 text-[#263128]"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
         </div>
 
         {/* Floating quote tray */}

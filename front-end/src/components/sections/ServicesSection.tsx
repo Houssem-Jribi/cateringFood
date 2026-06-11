@@ -1,4 +1,5 @@
 "use client";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import Reveal from "@/components/ui/Reveal";
 import { SERVICES } from "@/lib/data";
@@ -8,6 +9,62 @@ function scrollToBooking() {
 }
 
 export default function ServicesSection() {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const onScroll = () => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const scrollLeft = container.scrollLeft;
+      const cardWidth = container.children[0]?.getBoundingClientRect().width || 280;
+      const gap = 20; // gap-5 is 20px
+      const itemWidth = cardWidth + gap;
+      const index = Math.round(scrollLeft / itemWidth);
+      setActiveIndex(index);
+    }
+  };
+
+  const scrollPrev = () => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const cardWidth = container.children[0]?.getBoundingClientRect().width || 280;
+      const gap = 20;
+      const targetIndex = Math.max(0, activeIndex - 1);
+      container.scrollTo({
+        left: targetIndex * (cardWidth + gap),
+        behavior: "smooth",
+      });
+      setActiveIndex(targetIndex);
+    }
+  };
+
+  const scrollNext = () => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const cardWidth = container.children[0]?.getBoundingClientRect().width || 280;
+      const gap = 20;
+      const targetIndex = Math.min(SERVICES.length - 1, activeIndex + 1);
+      container.scrollTo({
+        left: targetIndex * (cardWidth + gap),
+        behavior: "smooth",
+      });
+      setActiveIndex(targetIndex);
+    }
+  };
+
+  const scrollToItem = (index: number) => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      const cardWidth = container.children[0]?.getBoundingClientRect().width || 280;
+      const gap = 20;
+      container.scrollTo({
+        left: index * (cardWidth + gap),
+        behavior: "smooth",
+      });
+      setActiveIndex(index);
+    }
+  };
+
   return (
     <section id="services" className="relative section-padding bg-[#fff8ed] overflow-hidden">
       <div className="absolute -top-20 -left-32 w-[460px] h-[460px] blob-2 bg-[#f4e6d0]/80 pointer-events-none" />
@@ -31,7 +88,11 @@ export default function ServicesSection() {
           </Reveal>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
+        <div
+          ref={scrollContainerRef}
+          onScroll={onScroll}
+          className="flex md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 overflow-x-auto md:overflow-x-visible snap-x snap-mandatory scrollbar-none pb-6 md:pb-0"
+        >
           {SERVICES.map((service, i) => (
             <motion.div
               key={service.id}
@@ -39,7 +100,7 @@ export default function ServicesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.7, delay: (i % 5) * 0.08, ease: [0.22, 1, 0.36, 1] }}
-              className="group card-surface rounded-3xl overflow-hidden flex flex-col hover:-translate-y-2 transition-all duration-500 hover:shadow-[0_32px_64px_-20px_rgba(38,49,40,0.25)]"
+              className="group card-surface rounded-3xl overflow-hidden flex flex-col hover:-translate-y-2 transition-all duration-500 hover:shadow-[0_32px_64px_-20px_rgba(38,49,40,0.25)] snap-start shrink-0 w-[85vw] sm:w-[50vw] md:w-auto"
             >
               <div className="relative h-36 overflow-hidden">
                 <img
@@ -67,6 +128,56 @@ export default function ServicesSection() {
               </div>
             </motion.div>
           ))}
+        </div>
+
+        {/* Carousel Navigation (Mobile Only) */}
+        <div className="flex md:hidden items-center justify-center gap-4 mt-6">
+          <button
+            onClick={scrollPrev}
+            className="w-11 h-11 rounded-full bg-white border border-[#263128]/10 flex items-center justify-center soft-shadow disabled:opacity-40 disabled:pointer-events-none"
+            aria-label="Previous service"
+            disabled={activeIndex === 0}
+          >
+            <svg
+              className="w-5 h-5 text-[#263128]"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          
+          <div className="flex items-center gap-1.5">
+            {SERVICES.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => scrollToItem(idx)}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  activeIndex === idx ? "w-6 bg-[#c96b3c]" : "w-2 bg-[#263128]/15"
+                }`}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
+          </div>
+
+          <button
+            onClick={scrollNext}
+            className="w-11 h-11 rounded-full bg-white border border-[#263128]/10 flex items-center justify-center soft-shadow disabled:opacity-40 disabled:pointer-events-none"
+            aria-label="Next service"
+            disabled={activeIndex === SERVICES.length - 1}
+          >
+            <svg
+              className="w-5 h-5 text-[#263128]"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
         </div>
       </div>
     </section>
